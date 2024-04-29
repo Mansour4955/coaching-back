@@ -1,6 +1,7 @@
-const { getAllUsersCtrl, getUserProfileCtrl, updateUserProfileCtrl, deleteUserProfileCtrl } = require("../controllers/usersController");
+const { getAllUsersCtrl, getUserProfileCtrl, updateUserProfileCtrl, deleteUserProfileCtrl, profilePhotoUploadCtrl } = require("../controllers/usersController");
+const photoUpload = require("../middlewares/photoUpload");
 const validateObjectId = require("../middlewares/validateObjectId");
-const { verifyTokenAndOnlyUser } = require("../middlewares/verifyToken");
+const { verifyTokenAndOnlyUser, verifyToken } = require("../middlewares/verifyToken");
 
 const router = require("express").Router();
 
@@ -11,8 +12,8 @@ router
   .put(validateObjectId, verifyTokenAndOnlyUser,updateUserProfileCtrl)
   .delete(validateObjectId, verifyTokenAndOnlyUser,deleteUserProfileCtrl);
 
-// router
-//   .route("/profile-photo-upload")
-//   .post(verifyToken, photoUpload.single("image"), profilePhotoUploadCtrl);
+router
+  .route("/profile-photo-upload")
+  .post(verifyToken, photoUpload.single("image"), profilePhotoUploadCtrl);
 
 module.exports = router;

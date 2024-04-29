@@ -103,7 +103,7 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
 });
 /**----------------------------------------
  * @desc Profile Photo Upload
- * @Route /api/users/profile/profile-photo-upload
+ * @Route /api/users/profile-photo-upload
  * @method POST
  * @access private (Only logged in user)
 ------------------------------------------*/
@@ -114,31 +114,14 @@ module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
   }
   // 2
   const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
-  //3 upload to cloudinary
-  const result = await cloudinaryUploadImage(imagePath);
-  console.log(result);
-  //4 get the user from db
+  //3 get the user from db
   const user = await User.findById(req.user.id);
-  //5 delete the old profile photo if exists
-  if (user.profilePhoto.publicId !== null) {
-    await cloudinaryRemoveImage(user.profilePhoto.publicId);
-  }
-  //6 change the profilePhoto field in the db
-  user.profilePhoto = {
-    url: result.secure_url,
-    publicId: result.public_id,
-  };
+
+  //4 change the profilePhoto field in the db
+  user.profileImage = imagePath;
   await user.save();
-  // 7 send response to client
-  res.status(200).json({
-    message: "your profile photo uploaded successfully",
-    profilePhoto: {
-      url: result.secure_url,
-      publicId: result.public_id,
-    },
-  });
-  //8 remove image from the server
-  fs.unlinkSync(imagePath);
+  // 5 send response to client
+  res.status(200).json({ user });
 });
 /**----------------------------------------
  * @desc Delete User Profile (Account)
