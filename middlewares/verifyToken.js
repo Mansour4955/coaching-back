@@ -17,16 +17,6 @@ function verifyToken(req, res, next) {
       .json({ message: "no token provided, access denied" });
   }
 }
-// verify token and admin
-function verifyTokenAndAdmin(req, res, next) {
-  verifyToken(req, res, () => {
-    if (req.user.isAdmin) {
-      next();
-    } else {
-      return res.status(403).json({ message: "not allowed, only admin" });
-    }
-  });
-}
 // verify token and only user himself
 function verifyTokenAndOnlyUser(req, res, next) {
   verifyToken(req, res, () => {
@@ -37,19 +27,7 @@ function verifyTokenAndOnlyUser(req, res, next) {
     }
   });
 }
-// verify token and authorization
-function verifyTokenAndAuthorization(req, res, next) {
-  verifyToken(req, res, () => {
-    if (req.user.id === req.params.id || req.user.isAdmin) {
-      next();
-    } else {
-      return res.status(403).json({ message: "not allowed, only user himself or admin" });
-    }
-  });
-}
 module.exports = {
   verifyToken,
-  verifyTokenAndAdmin,
   verifyTokenAndOnlyUser,
-  verifyTokenAndAuthorization
 };

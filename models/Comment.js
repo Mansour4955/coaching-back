@@ -2,26 +2,26 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 const commentSchema = new mongoose.Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User" },
-    postId: { type: Schema.Types.ObjectId, ref: "Post" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
     comment: { type: String, required: true, minlength: 1 },
     level1: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         comment: { type: String, minlength: 1 },
         commentDate: { type: String },
       },
     ],
     level2: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         comment: { type: String, minlength: 1 },
         commentDate: { type: String },
       },
     ],
     level3: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         comment: { type: String, minlength: 1 },
         commentDate: { type: String },
       },

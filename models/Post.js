@@ -3,11 +3,11 @@ const Joi = require("joi");
 const postSchema = new mongoose.Schema(
   {
     postImage: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: "User" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     description: { type: String, required: true, minlength: 3 },
     domaine: { type: String, required: true },
-    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
   {
     timestamps: true,

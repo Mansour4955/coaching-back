@@ -28,43 +28,43 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
     ],
-    follow: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    follow: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     appointmentOrders: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
         message: { type: String },
       },
     ],
     appointmentOnWait: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
       },
     ],
     appointmentAcceptedFromCoach: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
       },
     ],
     appointmentAccepted: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
       },
     ],
     coachNotifications: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
         action: { type: String, enum: ["cancel", "follow"] },
       },
     ],
     clientNotifications: [
       {
-        user: { type: Schema.Types.ObjectId, ref: "User" },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
         action: { type: String, enum: ["cancel", "accept"] },
       },
@@ -76,8 +76,8 @@ const userSchema = new mongoose.Schema(
         description: { type: String },
       },
     ],
-    chats: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
-    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     profileImage: {
       type: String,
       default:
