@@ -54,15 +54,16 @@ module.exports.GetAllPostsCtrl = asyncHandler(async (req, res) => {
  * @method GET
  * @access public
 ------------------------------------------*/
-module.exports.GetSinglePostCtrl = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.id)
+module.exports.GetCoachPostsCtrl = asyncHandler(async (req, res) => {
+  const coachId = req.params.id;
+  const posts = await Post.find({ user: coachId })
     .populate("user", ["-password"])
     .populate("comments");
-  if (!post) {
-    return res.status(404).json({ message: "post not found" });
+  if (!posts || posts.length === 0) {
+    return res.status(404).json({ message: "Posts not found for this coach" });
   }
 
-  res.status(200).json(post);
+  res.status(200).json(posts);
 });
 /**----------------------------------------
  * @desc Delete Post

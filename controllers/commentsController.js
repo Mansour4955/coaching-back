@@ -28,7 +28,9 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
  * @access public 
 ------------------------------------------*/
 module.exports.getAllCommentsCtrl = asyncHandler(async (req, res) => {
-  const comments = await Comment.find().populate("user");
+  const comments = await Comment.find({ postId: req.params.postId }).populate(
+    "user"
+  );
   res.status(200).json(comments);
 });
 /**----------------------------------------

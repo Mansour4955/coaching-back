@@ -3,10 +3,10 @@ const router = require("express").Router();
 const {
   createPostCtrl,
   GetAllPostsCtrl,
-  GetSinglePostCtrl,
   deletePostCtrl,
   updatePostCtrl,
   toggleLikeCtrl,
+  GetCoachPostsCtrl,
 } = require("../controllers/postsController");
 const photoUpload = require("../middlewares/photoUpload");
 const {
@@ -21,7 +21,7 @@ router
 
 router
   .route("/:id")
-  .get(validateObjectId, GetSinglePostCtrl)
+  .get(validateObjectId, GetCoachPostsCtrl)
   .delete(validateObjectId, verifyTokenAndOnlyUser, deletePostCtrl)
   .put(validateObjectId, verifyTokenAndOnlyUser, updatePostCtrl);
 
