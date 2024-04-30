@@ -2,11 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const asyncHandler = require("express-async-handler");
 const { Comment } = require("../models/Comment");
-const {
-  Post,
-  createPost,
-  updatePost,
-} = require("../models/Post");
+const { Post, createPost, updatePost } = require("../models/Post");
 
 /**----------------------------------------
  * @desc Create New Post
@@ -20,28 +16,22 @@ module.exports.createPostCtrl = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "no image provided" });
   }
   //
-  const { error } = validateCreatePost(req.body);
+  const { error } = createPost(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
   //
   const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
-  const result = await cloudinaryUploadImage(imagePath);
-  //
+  const imageData = fs.readFileSync(imagePath);
+
+  // Create the post with the image data
   const post = await Post.create({
-    title: req.body.title,
-    description: req.body.description,
-    category: req.body.category,
+    postImage: imageData,
     user: req.user.id,
-    image: {
-      url: result.secure_url,
-      publicId: result.public_id,
-    },
+    description: req.body.description,
+    domaine: req.body.domaine,
   });
-  //
   res.status(201).json(post);
-  //
-  fs.unlinkSync(imagePath);
 });
 
 /**----------------------------------------
@@ -51,25 +41,11 @@ module.exports.createPostCtrl = asyncHandler(async (req, res) => {
  * @access public
 ------------------------------------------*/
 module.exports.GetAllPostsCtrl = asyncHandler(async (req, res) => {
-  const POST_PER_PAGE = 3;
-  const { pageNumber, category } = req.query;
-  let posts;
-  if (pageNumber) {
-    posts = await Post.find()
-      .skip((pageNumber - 1) * POST_PER_PAGE)
-      .limit(POST_PER_PAGE)
-      .sort({ createdAt: -1 })
-      .populate("user", ["-password"]);
-  } else if (category) {
-    posts = await Post.find({ category })
-      .sort({ createdAt: -1 })
-      .populate("user", ["-password"]);
-  } else {
-    posts = await Post.find()
-      .sort({ createdAt: -1 })
-      .populate("user", ["-password"])
-      .populate("comments");
-  }
+  const posts = await Post.find()
+    .sort({ createdAt: -1 })
+    .populate("user", ["-password"])
+    .populate("comments");
+
   res.status(200).json(posts);
 });
 /**----------------------------------------
@@ -99,9 +75,8 @@ module.exports.deletePostCtrl = asyncHandler(async (req, res) => {
   if (!post) {
     return res.status(404).json({ message: "post not found" });
   }
-  if (req.user.isAdmin || req.user.id === post.user.toString()) {
+  if (req.user.id === post.user.toString()) {
     await Post.findByIdAndDelete(req.params.id);
-    await cloudinaryRemoveImage(post.image.publicId);
 
     await Comment.deleteMany({ postId: post._id });
 
@@ -120,7 +95,7 @@ module.exports.deletePostCtrl = asyncHandler(async (req, res) => {
  * @access private (Only owner of the post )
 ------------------------------------------*/
 module.exports.updatePostCtrl = asyncHandler(async (req, res) => {
-  const { error } = validateUpdatePost(req.body);
+  const { error } = updatePost(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
@@ -137,13 +112,14 @@ module.exports.updatePostCtrl = asyncHandler(async (req, res) => {
     req.params.id,
     {
       $set: {
-        title: req.body.title,
         description: req.body.description,
-        category: req.body.category,
+        domaine: req.body.domaine,
       },
     },
     { new: true }
-  ).populate("user", ["-password"]);
+  )
+    .populate("user", ["-password"])
+    .populate("comments");
 
   res.status(200).json(updatedPost);
 });

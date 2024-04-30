@@ -35,6 +35,7 @@ module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
   const users = await User.find(query)
     .select("-password")
     .populate("posts")
+    .populate("chats")
     .populate("follow")
     .populate("following");
   res.status(200).json(users);
@@ -48,7 +49,8 @@ module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
 module.exports.getUserProfileCtrl = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id)
     .select("-password")
-    .populate("posts");
+    .populate("posts")
+    .populate("chats");
   if (!user) {
     return res.status(404).json({ message: "user not found" });
   }
@@ -114,11 +116,11 @@ module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
   }
   // 2
   const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
+  const imageData = fs.readFileSync(imagePath);
   //3 get the user from db
   const user = await User.findById(req.user.id);
-
   //4 change the profilePhoto field in the db
-  user.profileImage = imagePath;
+  user.profileImage = imageData;
   await user.save();
   // 5 send response to client
   res.status(200).json({ user });

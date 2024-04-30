@@ -28,7 +28,6 @@ const createPost = (obj) => {
 const updatePost = (obj) => {
   const schema = Joi.object({
     postImage: Joi.string(),
-    user: Joi.string(),
     description: Joi.string().min(3),
     domaine: Joi.string(),
     likes: Joi.array().items(Joi.string()),
