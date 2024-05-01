@@ -10,10 +10,10 @@ router
   .route("/:id")
   .get(validateObjectId,getUserProfileCtrl)
   .put(validateObjectId, verifyTokenAndOnlyUser,updateUserProfileCtrl)
-  .delete(validateObjectId, verifyTokenAndOnlyUser,deleteUserProfileCtrl);
-
-router
-  .route("/profile-photo-upload")
+  .delete(validateObjectId, verifyTokenAndOnlyUser,deleteUserProfileCtrl)
   .post(verifyToken, photoUpload.single("image"), profilePhotoUploadCtrl);
+
+// router
+//   .route("/profile-photo-upload")
 
 module.exports = router;

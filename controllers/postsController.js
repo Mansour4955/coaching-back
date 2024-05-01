@@ -21,12 +21,11 @@ module.exports.createPostCtrl = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   //
-  const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
-  const imageData = fs.readFileSync(imagePath);
+  const imagePath = req.file.filename;
 
   // Create the post with the image data
   const post = await Post.create({
-    postImage: imageData,
+    postImage: imagePath,
     user: req.user.id,
     description: req.body.description,
     domaine: req.body.domaine,

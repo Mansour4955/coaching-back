@@ -116,15 +116,15 @@ module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "no file provided" });
   }
   // 2
-  const imagePath = path.join(__dirname, `../images/${req.file.filename}`);
-  const imageData = fs.readFileSync(imagePath);
+  const imagePath = req.file.filename
+
   //3 get the user from db
   const user = await User.findById(req.user.id);
   //4 change the profilePhoto field in the db
-  user.profileImage = imageData;
+  user.profileImage = imagePath;
   await user.save();
   // 5 send response to client
-  res.status(200).json({ user });
+  res.status(200).json(user);
 });
 /**----------------------------------------
  * @desc Delete User Profile (Account)
