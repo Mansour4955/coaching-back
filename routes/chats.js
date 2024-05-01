@@ -10,6 +10,7 @@ const {
   getAllChatsCtrl,
   deleteChatCtrl,
   updateChatCtrl,
+  getSingleChatCtrl,
 } = require("../controllers/chatsController");
 
 router
@@ -19,6 +20,7 @@ router
 
 router
   .route("/:id")
+  .get(validateObjectId, verifyTokenAndOnlyUser, getSingleChatCtrl)
   .delete(validateObjectId, verifyTokenAndOnlyUser, deleteChatCtrl)
   .put(validateObjectId, verifyTokenAndOnlyUser, updateChatCtrl);
 module.exports = router;

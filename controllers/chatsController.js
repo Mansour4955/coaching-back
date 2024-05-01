@@ -28,6 +28,17 @@ module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
   res.status(200).json(chats);
 });
 /**----------------------------------------
+ * @desc Get single chat
+ * @Route /api/chats/:id
+ * @method GET
+ * @access public 
+------------------------------------------*/
+module.exports.getSingleChatCtrl = asyncHandler(async (req, res) => {
+  const chatId = req.params.id;
+  const chat = await Chat.findById(chatId);
+  res.status(200).json(chat);
+});
+/**----------------------------------------
  * @desc Delete Chat
  * @Route /api/chats/:id
  * @method DELETE

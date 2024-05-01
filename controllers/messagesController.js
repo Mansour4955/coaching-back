@@ -1,82 +1,84 @@
 const asyncHandler = require("express-async-handler");
-const { createChat, updateChat, Chat } = require("../models/Chat");
+const { Message, createMessage, updateMessage } = require("../models/Message");
 /**----------------------------------------
- * @desc Create New Chat
- * @Route /api/chats
+ * @desc Create New Message
+ * @Route /api/messages
  * @method POST
  * @access private (Only logged in user)
 ------------------------------------------*/
-module.exports.createChatCtrl = asyncHandler(async (req, res) => {
-  const { error } = createChat(req.body);
+module.exports.createMessageCtrl = asyncHandler(async (req, res) => {
+  const { error } = createMessage(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  const chat = await Chat.create({
-    members: req.body.members,
+  const message = await Message.create({
+    chatId: req.params.id,
+    sender: req.user.id,
+    message: req.body.message,
   });
-  res.status(201).json(chat);
+  res.status(201).json(message);
 });
 /**----------------------------------------
- * @desc Get All Chats
- * @Route /api/chats
+ * @desc Get All messages
+ * @Route /api/messages
  * @method GET
  * @access public 
 ------------------------------------------*/
-module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const chats = await Chat.find({ members: userId });
-  res.status(200).json(chats);
+module.exports.getAllMessagesCtrl = asyncHandler(async (req, res) => {
+  const chatId = req.params.id;
+  const messages = await Message.find({ chatId });
+  res.status(200).json(messages);
 });
 /**----------------------------------------
- * @desc Delete Chat
- * @Route /api/chats/:id
+ * @desc Delete Message
+ * @Route /api/messages/:id
  * @method DELETE
- * @access private (Only owner of the chat)
+ * @access private (Only owner of the message)
 ------------------------------------------*/
-module.exports.deleteChatCtrl = asyncHandler(async (req, res) => {
-  const chat = await Chat.findById(req.params.id);
-  if (!chat) {
-    return res.status(404).json({ message: "chat not found" });
+module.exports.deleteMessageCtrl = asyncHandler(async (req, res) => {
+  userId = req.user.id;
+  const message = await Message.findById(req.params.id);
+  if (!message) {
+    return res.status(404).json({ message: "message not found" });
   }
 
-  const isUserMember = chat.members.includes(req.user.id);
-  if (isUserMember) {
-    await Chat.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "chat has been deleted" });
+  if (userId === message.sender.toString()) {
+    await Message.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "message has been deleted" });
   } else {
     res.status(403).json({ message: "access denied, not allowed" });
   }
 });
 /**----------------------------------------
- * @desc Update Comment
- * @Route /api/comments/:id
+ * @desc Update Message
+ * @Route /api/messages/:id
  * @method PUT
- * @access private (Only owner of the chat)
+ * @access private (Only owner of the message)
 ------------------------------------------*/
-module.exports.updateChatCtrl = asyncHandler(async (req, res) => {
-  const { error } = updateChat(req.body);
+module.exports.updateMessageCtrl = asyncHandler(async (req, res) => {
+  userId = req.user.id;
+  const { error } = updateMessage(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  const chat = await Chat.findById(req.params.id);
-  if (!chat) {
-    return res.status(404).json({ message: "chat not found" });
+  const message = await Message.findById(req.params.id);
+  if (!message) {
+    return res.status(404).json({ message: "message not found" });
   }
-  const isUserMember = chat.members.includes(req.user.id);
 
-  if (!isUserMember) {
+  if (userId !== message.sender.toString()) {
     return res.status(403).json({
-      message: "access denied, only user himself can edit their chat",
+      message: "access denied, only user himself can edit their message",
     });
   }
-  const updatedChat = await Chat.findByIdAndUpdate(
+  const updateMessage = await Message.findByIdAndUpdate(
     req.params.id,
     {
       $set: {
-        members: req.body.members,
+        message: req.body.message,
       },
     },
     { new: true }
   );
-  res.status(200).json(updatedChat);
+  res.status(200).json(updateMessage);
 });

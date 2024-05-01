@@ -6,19 +6,19 @@ const {
 } = require("../middlewares/verifyToken");
 const validateObjectId = require("../middlewares/validateObjectId");
 const {
-  createChatCtrl,
-  getAllChatsCtrl,
-  deleteChatCtrl,
-  updateChatCtrl,
-} = require("../controllers/chatsController");
+  createMessageCtrl,
+  getAllMessagesCtrl,
+  deleteMessageCtrl,
+  updateMessageCtrl,
+} = require("../controllers/messagesController");
 
 router
   .route("/")
-  .post(verifyToken, createChatCtrl)
-  .get(verifyToken, getAllChatsCtrl);
+  .post(verifyToken, createMessageCtrl)
+  .get(verifyToken, getAllMessagesCtrl);
 
 router
   .route("/:id")
-  .delete(validateObjectId, verifyTokenAndOnlyUser, deleteChatCtrl)
-  .put(validateObjectId, verifyTokenAndOnlyUser, updateChatCtrl);
+  .delete(validateObjectId, verifyTokenAndOnlyUser, deleteMessageCtrl)
+  .put(validateObjectId, verifyTokenAndOnlyUser, updateMessageCtrl);
 module.exports = router;
