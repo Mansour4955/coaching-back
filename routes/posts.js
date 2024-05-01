@@ -22,8 +22,8 @@ router
 router
   .route("/:id")
   .get(validateObjectId, GetCoachPostsCtrl)
-  .delete(validateObjectId, verifyTokenAndOnlyUser, deletePostCtrl)
-  .put(validateObjectId, verifyTokenAndOnlyUser, updatePostCtrl);
+  .delete(validateObjectId, verifyToken, deletePostCtrl)
+  .put(validateObjectId, verifyToken, updatePostCtrl);
 
 router.route("/like/:id").put(validateObjectId, verifyToken, toggleLikeCtrl);
 module.exports = router;

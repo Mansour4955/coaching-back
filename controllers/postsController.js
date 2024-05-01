@@ -55,7 +55,7 @@ module.exports.GetAllPostsCtrl = asyncHandler(async (req, res) => {
 ------------------------------------------*/
 module.exports.GetCoachPostsCtrl = asyncHandler(async (req, res) => {
   const coachId = req.params.id;
-  const posts = await Post.find({ user: coachId })
+  const posts = await Post.find({ user: coachId }).sort({ createdAt: -1 })
     .populate("user", ["-password"])
     .populate("comments");
   if (!posts || posts.length === 0) {
