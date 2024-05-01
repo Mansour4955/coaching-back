@@ -12,23 +12,23 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  const profile = await User.findById(req.user.id);
+  // const profile = await User.findById(req.user.id);
   const comment = await Comment.create({
     user: req.user.id,
     postId: req.body.postId,
     comment: req.body.comment,
-    userInfo: profile,
+    // userInfo: profile,
   });
   res.status(201).json(comment);
 });
 /**----------------------------------------
- * @desc Get All Comments
- * @Route /api/comments
+ * @desc Get All Comments of the post
+ * @Route /api/comments/:id
  * @method GET
  * @access public 
 ------------------------------------------*/
 module.exports.getAllCommentsCtrl = asyncHandler(async (req, res) => {
-  const comments = await Comment.find({ postId: req.params.postId }).populate(
+  const comments = await Comment.find({ postId: req.params.id }).populate(
     "user"
   );
   res.status(200).json(comments);
