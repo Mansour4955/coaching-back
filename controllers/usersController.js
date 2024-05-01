@@ -32,6 +32,7 @@ module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
   if (name) {
     query.username = { $regex: new RegExp(name, "i") };
   }
+  query.role = "coach";
   const users = await User.find(query)
     .select("-password")
     .populate("posts")
