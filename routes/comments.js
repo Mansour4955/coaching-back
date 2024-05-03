@@ -4,6 +4,7 @@ const {
   getAllCommentsCtrl,
   deleteCommentCtrl,
   updateCommentCtrl,
+  createNestedCommentsCtrl,
 } = require("../controllers/commentsController");
 const {
   verifyToken,
@@ -15,7 +16,8 @@ router.route("/").post(verifyToken, createCommentCtrl);
 
 router
   .route("/:id")
-  .get(validateObjectId,getAllCommentsCtrl)
-  .delete(validateObjectId, verifyTokenAndOnlyUser, deleteCommentCtrl)
-  .put(validateObjectId, verifyTokenAndOnlyUser, updateCommentCtrl);
+  .post(validateObjectId, verifyToken, createNestedCommentsCtrl)
+  .get(validateObjectId, getAllCommentsCtrl)
+  .delete(validateObjectId, verifyToken, deleteCommentCtrl)
+  .put(validateObjectId, verifyToken, updateCommentCtrl);
 module.exports = router;
