@@ -28,6 +28,7 @@ module.exports.createMessageCtrl = asyncHandler(async (req, res) => {
  * @method GET
  * @access public 
 ------------------------------------------*/
+// won't use I think
 module.exports.getAllMessagesCtrl = asyncHandler(async (req, res) => {
   const chatId = req.params.id;
   const messages = await Message.find({ chatId });

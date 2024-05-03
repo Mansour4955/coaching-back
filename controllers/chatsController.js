@@ -64,6 +64,7 @@ module.exports.deleteChatCtrl = asyncHandler(async (req, res) => {
  * @method PUT
  * @access private (Only owner of the chat)
 ------------------------------------------*/
+// won't use I think
 module.exports.updateChatCtrl = asyncHandler(async (req, res) => {
   const { error } = updateChat(req.body);
   if (error) {
