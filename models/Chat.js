@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 const chatSchema = new mongoose.Schema(
   {
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
+    users:[{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
   },
   {
     timestamps: true,
@@ -12,13 +13,13 @@ const Chat = mongoose.model("Chat", chatSchema);
 
 const createChat = (obj) => {
   const schema = Joi.object({
-    members: Joi.array().items(Joi.string()).required(),
+    users: Joi.array().items(Joi.string()).required(),
   });
   return schema.validate(obj);
 };
 const updateChat = (obj) => {
   const schema = Joi.object({
-    members: Joi.array().items(Joi.string()),
+    messages: Joi.array().items(Joi.string()),
   });
   return schema.validate(obj);
 };

@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const { Message, createMessage, updateMessage } = require("../models/Message");
+const { Chat } = require("../models/Chat");
 /**----------------------------------------
  * @desc Create New Message
  * @Route /api/messages
@@ -12,11 +13,14 @@ module.exports.createMessageCtrl = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   const message = await Message.create({
-    chatId: req.params.id,
     sender: req.user.id,
+    chatId: req.body.chatId,
     message: req.body.message,
   });
-  res.status(201).json(message);
+  const chat = await Chat.findById(req.body.chatId).populate("messages").populate("users")
+  chat.messages.push(message);
+  await chat.save();
+  res.status(201).json(chat);
 });
 /**----------------------------------------
  * @desc Get All messages
@@ -71,7 +75,7 @@ module.exports.updateMessageCtrl = asyncHandler(async (req, res) => {
       message: "access denied, only user himself can edit their message",
     });
   }
-  const updateMessage = await Message.findByIdAndUpdate(
+  const updatedMessage = await Message.findByIdAndUpdate(
     req.params.id,
     {
       $set: {
@@ -80,5 +84,5 @@ module.exports.updateMessageCtrl = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
-  res.status(200).json(updateMessage);
+  res.status(200).json(updatedMessage);
 });

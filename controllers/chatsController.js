@@ -12,7 +12,7 @@ module.exports.createChatCtrl = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
   const chat = await Chat.create({
-    members: req.body.members,
+    users: req.body.users,
   });
   res.status(201).json(chat);
 });
@@ -24,7 +24,7 @@ module.exports.createChatCtrl = asyncHandler(async (req, res) => {
 ------------------------------------------*/
 module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const chats = await Chat.find({ members: userId });
+  const chats = await Chat.find({ users: userId }).populate("messages").populate("users")
   res.status(200).json(chats);
 });
 /**----------------------------------------
@@ -35,7 +35,7 @@ module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
 ------------------------------------------*/
 module.exports.getSingleChatCtrl = asyncHandler(async (req, res) => {
   const chatId = req.params.id;
-  const chat = await Chat.findById(chatId);
+  const chat = await Chat.findById(chatId).populate("messages").populate("users")
   res.status(200).json(chat);
 });
 /**----------------------------------------
@@ -50,7 +50,7 @@ module.exports.deleteChatCtrl = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "chat not found" });
   }
 
-  const isUserMember = chat.members.includes(req.user.id);
+  const isUserMember = chat.users.includes(req.user.id);
   if (isUserMember) {
     await Chat.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "chat has been deleted" });
@@ -73,7 +73,7 @@ module.exports.updateChatCtrl = asyncHandler(async (req, res) => {
   if (!chat) {
     return res.status(404).json({ message: "chat not found" });
   }
-  const isUserMember = chat.members.includes(req.user.id);
+  const isUserMember = chat.users.includes(req.user.id);
 
   if (!isUserMember) {
     return res.status(403).json({
@@ -84,7 +84,7 @@ module.exports.updateChatCtrl = asyncHandler(async (req, res) => {
     req.params.id,
     {
       $set: {
-        members: req.body.members,
+        messages: req.body.messages,
       },
     },
     { new: true }

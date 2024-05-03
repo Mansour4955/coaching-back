@@ -2,7 +2,6 @@ const router = require("express").Router();
 
 const {
   verifyToken,
-  verifyTokenAndOnlyUser,
 } = require("../middlewares/verifyToken");
 const validateObjectId = require("../middlewares/validateObjectId");
 const {
@@ -20,7 +19,7 @@ router
 
 router
   .route("/:id")
-  .get(validateObjectId, verifyTokenAndOnlyUser, getSingleChatCtrl)
-  .delete(validateObjectId, verifyTokenAndOnlyUser, deleteChatCtrl)
-  .put(validateObjectId, verifyTokenAndOnlyUser, updateChatCtrl);
+  .get(validateObjectId, verifyToken, getSingleChatCtrl)
+  .delete(validateObjectId, verifyToken, deleteChatCtrl)
+  .put(validateObjectId, verifyToken, updateChatCtrl);
 module.exports = router;

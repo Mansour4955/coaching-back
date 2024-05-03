@@ -15,7 +15,7 @@ const Message = mongoose.model("Message", messageSchema);
 const createMessage = (obj) => {
   const schema = Joi.object({
     chatId: Joi.string().required(),
-    sender: Joi.string().required(),
+    sender: Joi.string(),
     message: Joi.string().min(1).required(),
   });
   return schema.validate(obj);

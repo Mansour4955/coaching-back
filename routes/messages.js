@@ -12,13 +12,11 @@ const {
   updateMessageCtrl,
 } = require("../controllers/messagesController");
 
-router
-  .route("/")
-  .post(verifyToken, createMessageCtrl)
-  .get(verifyToken, getAllMessagesCtrl);
+router.route("/").post(verifyToken, createMessageCtrl);
 
 router
   .route("/:id")
-  .delete(validateObjectId, verifyTokenAndOnlyUser, deleteMessageCtrl)
-  .put(validateObjectId, verifyTokenAndOnlyUser, updateMessageCtrl);
+  .get(verifyToken, getAllMessagesCtrl)
+  .delete(validateObjectId, verifyToken, deleteMessageCtrl)
+  .put(validateObjectId, verifyToken, updateMessageCtrl);
 module.exports = router;
