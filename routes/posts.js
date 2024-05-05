@@ -11,7 +11,6 @@ const {
 const photoUpload = require("../middlewares/photoUpload");
 const {
   verifyToken,
-  verifyTokenAndOnlyUser,
 } = require("../middlewares/verifyToken");
 const validateObjectId = require("../middlewares/validateObjectId");
 router

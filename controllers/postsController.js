@@ -158,5 +158,6 @@ module.exports.toggleLikeCtrl = asyncHandler(async (req, res) => {
       { new: true }
     );
   }
+  await post.save()
   res.status(200).json(post);
 });

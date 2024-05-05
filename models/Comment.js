@@ -35,7 +35,6 @@ const Comment = mongoose.model("Comment", commentSchema);
 
 const createComment = (obj) => {
   const schema = Joi.object({
-    user: Joi.string().required(), // Assuming user is represented by a string (user ID)
     postId: Joi.string().required(), // Assuming postId is represented by a string (post ID)
     comment: Joi.string().required().min(1),
     level1: Joi.array().items(

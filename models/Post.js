@@ -33,7 +33,6 @@ const Post = mongoose.model("Post", postSchema);
 const createPost = (obj) => {
   const schema = Joi.object({
     postImage: Joi.string(),
-    user: Joi.string().required(),
     description: Joi.string().required().min(3),
     domaine: Joi.string()
       .valid(

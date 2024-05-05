@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const { Comment, createComment, updateComment } = require("../models/Comment");
-// const { User } = require("../models/User");
+const { Post } = require("../models/Post");
 /**----------------------------------------
  * @desc Create New Comment
  * @Route /api/comments
@@ -50,7 +50,9 @@ module.exports.createNestedCommentsCtrl = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Missing 'levelId' parameter" });
       }
       // Find the level1 comment based on levelId
-      const level1Comment = levelComment.level1.find(item => item._id == levelId);
+      const level1Comment = levelComment.level1.find(
+        (item) => item._id == levelId
+      );
       if (!level1Comment) {
         return res.status(404).json({ message: "Level1 comment not found" });
       }
@@ -67,7 +69,9 @@ module.exports.createNestedCommentsCtrl = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Missing 'levelId' parameter" });
       }
       // Find the level2 comment based on levelId
-      const level2Comment = levelComment.level1.reduce((acc, cur) => acc.concat(cur.level2), []).find(item => item._id == levelId);
+      const level2Comment = levelComment.level1
+        .reduce((acc, cur) => acc.concat(cur.level2), [])
+        .find((item) => item._id == levelId);
       if (!level2Comment) {
         return res.status(404).json({ message: "Level2 comment not found" });
       }
@@ -93,9 +97,8 @@ module.exports.createNestedCommentsCtrl = asyncHandler(async (req, res) => {
  * @access public 
 ------------------------------------------*/
 module.exports.getAllCommentsCtrl = asyncHandler(async (req, res) => {
-  const comments = await Comment.find({ postId: req.params.id }).populate(
-    "user"
-  );
+  const { postId } = req.query;
+  const comments = await Comment.find({ postId }).populate("user");
   res.status(200).json(comments);
 });
 /**----------------------------------------
@@ -122,7 +125,9 @@ module.exports.deleteCommentCtrl = asyncHandler(async (req, res) => {
         comment = await Comment.findOne({ "level1.level2._id": levelId });
         break;
       case "level3":
-        comment = await Comment.findOne({ "level1.level2.level3._id": levelId });
+        comment = await Comment.findOne({
+          "level1.level2.level3._id": levelId,
+        });
         break;
       default:
         return res.status(400).json({ message: "Invalid level provided" });
@@ -144,13 +149,23 @@ module.exports.deleteCommentCtrl = asyncHandler(async (req, res) => {
       let nestedComment;
       switch (level) {
         case "level1":
-          nestedComment = comment.level1.find(item => item._id.toString() === levelId);
+          nestedComment = comment.level1.find(
+            (item) => item._id.toString() === levelId
+          );
           break;
         case "level2":
-          nestedComment = comment.level1.flatMap(level1Comment => level1Comment.level2).find(item => item._id.toString() === levelId);
+          nestedComment = comment.level1
+            .flatMap((level1Comment) => level1Comment.level2)
+            .find((item) => item._id.toString() === levelId);
           break;
         case "level3":
-          nestedComment = comment.level1.flatMap(level1Comment => level1Comment.level2.flatMap(level2Comment => level2Comment.level3)).find(item => item._id.toString() === levelId);
+          nestedComment = comment.level1
+            .flatMap((level1Comment) =>
+              level1Comment.level2.flatMap(
+                (level2Comment) => level2Comment.level3
+              )
+            )
+            .find((item) => item._id.toString() === levelId);
           break;
       }
       if (!nestedComment) {
@@ -167,17 +182,23 @@ module.exports.deleteCommentCtrl = asyncHandler(async (req, res) => {
         await Comment.findByIdAndDelete(commentId);
         break;
       case "level1":
-        comment.level1 = comment.level1.filter(item => item._id.toString() !== levelId);
+        comment.level1 = comment.level1.filter(
+          (item) => item._id.toString() !== levelId
+        );
         break;
       case "level2":
-        comment.level1.forEach(level1Comment => {
-          level1Comment.level2 = level1Comment.level2.filter(item => item._id.toString() !== levelId);
+        comment.level1.forEach((level1Comment) => {
+          level1Comment.level2 = level1Comment.level2.filter(
+            (item) => item._id.toString() !== levelId
+          );
         });
         break;
       case "level3":
-        comment.level1.forEach(level1Comment => {
-          level1Comment.level2.forEach(level2Comment => {
-            level2Comment.level3 = level2Comment.level3.filter(item => item._id.toString() !== levelId);
+        comment.level1.forEach((level1Comment) => {
+          level1Comment.level2.forEach((level2Comment) => {
+            level2Comment.level3 = level2Comment.level3.filter(
+              (item) => item._id.toString() !== levelId
+            );
           });
         });
         break;
@@ -206,7 +227,7 @@ module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  
+
   const { id: commentId } = req.params;
   const { level, levelId } = req.query;
 
@@ -217,8 +238,8 @@ module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
         { _id: commentId },
         { "level1._id": levelId },
         { "level1.level2._id": levelId },
-        { "level1.level2.level3._id": levelId }
-      ]
+        { "level1.level2.level3._id": levelId },
+      ],
     });
 
     // Check if the comment exists
@@ -231,29 +252,36 @@ module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
       case "main":
         if (req.user.id !== comment.user.toString()) {
           return res.status(403).json({
-            message: "Access denied, only the user who created the main comment can edit it",
+            message:
+              "Access denied, only the user who created the main comment can edit it",
           });
         }
         break;
       case "level1":
-        const level1Comment = comment.level1.find(item => item._id.toString() === levelId);
+        const level1Comment = comment.level1.find(
+          (item) => item._id.toString() === levelId
+        );
         if (!level1Comment) {
           return res.status(404).json({ message: "Level 1 comment not found" });
         }
         if (req.user.id !== level1Comment.user.toString()) {
           return res.status(403).json({
-            message: "Access denied, only the user who created the nested comment can edit it",
+            message:
+              "Access denied, only the user who created the nested comment can edit it",
           });
         }
         // Update level1Comment content
         level1Comment.comment = req.body.comment;
         break;
       case "level2":
-        comment.level1.forEach(level1Comment => {
-          const level2Comment = level1Comment.level2.find(item => item._id.toString() === levelId);
+        comment.level1.forEach((level1Comment) => {
+          const level2Comment = level1Comment.level2.find(
+            (item) => item._id.toString() === levelId
+          );
           if (level2Comment && req.user.id !== level2Comment.user.toString()) {
             return res.status(403).json({
-              message: "Access denied, only the user who created the nested comment can edit it",
+              message:
+                "Access denied, only the user who created the nested comment can edit it",
             });
           }
           if (level2Comment) {
@@ -262,12 +290,18 @@ module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
         });
         break;
       case "level3":
-        comment.level1.forEach(level1Comment => {
-          level1Comment.level2.forEach(level2Comment => {
-            const level3Comment = level2Comment.level3.find(item => item._id.toString() === levelId);
-            if (level3Comment && req.user.id !== level3Comment.user.toString()) {
+        comment.level1.forEach((level1Comment) => {
+          level1Comment.level2.forEach((level2Comment) => {
+            const level3Comment = level2Comment.level3.find(
+              (item) => item._id.toString() === levelId
+            );
+            if (
+              level3Comment &&
+              req.user.id !== level3Comment.user.toString()
+            ) {
               return res.status(403).json({
-                message: "Access denied, only the user who created the nested comment can edit it",
+                message:
+                  "Access denied, only the user who created the nested comment can edit it",
               });
             }
             if (level3Comment) {
@@ -288,6 +322,3 @@ module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
-
