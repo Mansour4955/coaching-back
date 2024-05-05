@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const asyncHandler = require("express-async-handler");
 const { Comment } = require("../models/Comment");
+const { User } = require("../models/User");
 const { Post, createPost, updatePost } = require("../models/Post");
 
 /**----------------------------------------
@@ -22,14 +23,16 @@ module.exports.createPostCtrl = asyncHandler(async (req, res) => {
   }
   //
   const imagePath = req.file.filename;
-
+  const theUser = await User.findById(req.user.id);
   // Create the post with the image data
   const post = await Post.create({
     postImage: imagePath,
     user: req.user.id,
     description: req.body.description,
     domaine: req.body.domaine,
-  });
+  })
+  theUser.posts.push(post);
+  theUser.save();
   res.status(201).json(post);
 });
 
@@ -55,7 +58,8 @@ module.exports.GetAllPostsCtrl = asyncHandler(async (req, res) => {
 ------------------------------------------*/
 module.exports.GetCoachPostsCtrl = asyncHandler(async (req, res) => {
   const coachId = req.params.id;
-  const posts = await Post.find({ user: coachId }).sort({ createdAt: -1 })
+  const posts = await Post.find({ user: coachId })
+    .sort({ createdAt: -1 })
     .populate("user", ["-password"])
     .populate("comments");
   if (!posts || posts.length === 0) {
