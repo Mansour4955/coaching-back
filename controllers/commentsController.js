@@ -16,7 +16,8 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
     user: req.user.id,
     postId: req.body.postId,
     comment: req.body.comment,
-  });
+  })
+  await comment.populate('user')
   res.status(201).json(comment);
 });
 /**----------------------------------------
@@ -30,7 +31,7 @@ module.exports.createNestedCommentsCtrl = asyncHandler(async (req, res) => {
   const { level, levelId } = req.query;
 
   // Fetch the comment
-  let levelComment = await Comment.findById(commentId);
+  let levelComment = await Comment.findById(commentId).populate("user")
   if (!levelComment) {
     return res.status(404).json({ message: "Comment not found" });
   }
@@ -309,6 +310,7 @@ module.exports.updateCommentCtrl = asyncHandler(async (req, res) => {
               "Access denied, only the user who created the main comment can edit it",
           });
         }
+        comment.comment = req.body.comment;
         break;
       case "level1":
         const level1Comment = comment.level1.find(

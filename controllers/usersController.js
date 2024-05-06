@@ -26,6 +26,9 @@ module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
   if (course) {
     query.course = course;
   }
+  // if (role) {
+  //   query.role = role;
+  // }
   if (maxPrice) {
     query.price = { $lte: maxPrice };
   }
@@ -116,7 +119,7 @@ module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "no file provided" });
   }
   // 2
-  const imagePath = req.file.filename
+  const imagePath = req.file.filename;
 
   //3 get the user from db
   const user = await User.findById(req.user.id);
