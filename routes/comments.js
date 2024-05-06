@@ -8,7 +8,6 @@ const {
 } = require("../controllers/commentsController");
 const {
   verifyToken,
-  verifyTokenAndOnlyUser,
 } = require("../middlewares/verifyToken");
 const validateObjectId = require("../middlewares/validateObjectId");
 
