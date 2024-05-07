@@ -16,8 +16,8 @@ module.exports.createCommentCtrl = asyncHandler(async (req, res) => {
     user: req.user.id,
     postId: req.body.postId,
     comment: req.body.comment,
-  })
-  await comment.populate('user')
+  });
+  await comment.populate("user");
   res.status(201).json(comment);
 });
 /**----------------------------------------
@@ -31,7 +31,29 @@ module.exports.createNestedCommentsCtrl = asyncHandler(async (req, res) => {
   const { level, levelId } = req.query;
 
   // Fetch the comment
-  let levelComment = await Comment.findById(commentId).populate("user")
+  let levelComment = await Comment.findById(commentId)
+    .populate("user")
+    .populate({
+      path: "level1",
+      populate: {
+        path: "user",
+        model: "User",
+      },
+    })
+    .populate({
+      path: "level1.level2",
+      populate: {
+        path: "user",
+        model: "User",
+      },
+    })
+    .populate({
+      path: "level1.level2.level3",
+      populate: {
+        path: "user",
+        model: "User",
+      },
+    });
   if (!levelComment) {
     return res.status(404).json({ message: "Comment not found" });
   }
@@ -84,59 +106,62 @@ module.exports.createNestedCommentsCtrl = asyncHandler(async (req, res) => {
       });
       break;
 
+    case "level3":
+      // Ensure levelId is provided
+      if (!levelId) {
+        return res.status(400).json({ message: "Missing 'levelId' parameter" });
+      }
 
-      case "level3":
-  // Ensure levelId is provided
-  if (!levelId) {
-    return res.status(400).json({ message: "Missing 'levelId' parameter" });
-  }
-  
-  // Find the level3 comment based on levelId
-  let foundLevel3Comment = null;
-  levelComment.level1.some((mainComment) => {
-    return mainComment.level2.some((level2Comment) => {
-      foundLevel3Comment = level2Comment.level3.find(
-        (level3Comment) => level3Comment._id == levelId
-      );
-      return foundLevel3Comment;
-    });
-  });
-
-  // If the level3 comment is not found, return 404
-  if (!foundLevel3Comment) {
-    return res.status(404).json({ message: "Level3 comment not found" });
-  }
-
-  // Find the index of the found level3 comment within its parent level2's level3 array
-  const level3Index = levelComment.level1.reduce((acc, cur) => {
-    const level2Comments = cur.level2.filter((item) => item._id == levelId);
-    if (level2Comments.length > 0) {
-      return acc.concat(
-        level2Comments.map((item) =>
-          item.level3.findIndex((subItem) => subItem._id == levelId)
-        )
-      );
-    }
-    return acc;
-  }, []).find((index) => index !== -1);
-
-  if (level3Index === -1) {
-    return res.status(404).json({ message: "Level3 comment not found" });
-  }
-// Add the new nested comment at the end of the level3 array
-levelComment.level1.forEach((mainComment) => {
-  mainComment.level2.forEach((level2Comment) => {
-    if (level2Comment.level3.includes(foundLevel3Comment)) {
-      level2Comment.level3.push({
-        user: req.user.id,
-        comment: req.body.comment,
-        commentDate: new Date(),
+      // Find the level3 comment based on levelId
+      let foundLevel3Comment = null;
+      levelComment.level1.some((mainComment) => {
+        return mainComment.level2.some((level2Comment) => {
+          foundLevel3Comment = level2Comment.level3.find(
+            (level3Comment) => level3Comment._id == levelId
+          );
+          return foundLevel3Comment;
+        });
       });
-    }
-  });
-});
-  break;
- default:
+
+      // If the level3 comment is not found, return 404
+      if (!foundLevel3Comment) {
+        return res.status(404).json({ message: "Level3 comment not found" });
+      }
+
+      // Find the index of the found level3 comment within its parent level2's level3 array
+      const level3Index = levelComment.level1
+        .reduce((acc, cur) => {
+          const level2Comments = cur.level2.filter(
+            (item) => item._id == levelId
+          );
+          if (level2Comments.length > 0) {
+            return acc.concat(
+              level2Comments.map((item) =>
+                item.level3.findIndex((subItem) => subItem._id == levelId)
+              )
+            );
+          }
+          return acc;
+        }, [])
+        .find((index) => index !== -1);
+
+      if (level3Index === -1) {
+        return res.status(404).json({ message: "Level3 comment not found" });
+      }
+      // Add the new nested comment at the end of the level3 array
+      levelComment.level1.forEach((mainComment) => {
+        mainComment.level2.forEach((level2Comment) => {
+          if (level2Comment.level3.includes(foundLevel3Comment)) {
+            level2Comment.level3.push({
+              user: req.user.id,
+              comment: req.body.comment,
+              commentDate: new Date(),
+            });
+          }
+        });
+      });
+      break;
+    default:
       return res.status(400).json({ message: "Invalid level provided" });
   }
 
