@@ -16,7 +16,7 @@ const { Chat } = require("../models/Chat");
 ------------------------------------------*/
 module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
   let query = {};
-  const { city, method, course, maxPrice, name } = req.query;
+  const { city, method, course, maxPrice, name,role } = req.query;
   if (city) {
     query.city = city;
   }
@@ -26,16 +26,16 @@ module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
   if (course) {
     query.course = course;
   }
-  // if (role) {
-  //   query.role = role;
-  // }
+  if (role) {
+    query.role = role;
+  }
   if (maxPrice) {
     query.price = { $lte: maxPrice };
   }
   if (name) {
     query.username = { $regex: new RegExp(name, "i") };
   }
-  query.role = "coach";
+  // query.role = "coach";
   const users = await User.find(query)
     .select("-password")
     .populate("posts")

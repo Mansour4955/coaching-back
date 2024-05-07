@@ -117,7 +117,7 @@ module.exports.updatePostCtrl = asyncHandler(async (req, res) => {
     {
       $set: {
         description: req.body.description,
-        domaine: req.body.domaine,
+        // domaine: req.body.domaine,
       },
     },
     { new: true }
