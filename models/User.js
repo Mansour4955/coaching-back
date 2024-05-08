@@ -118,7 +118,10 @@ const userSchema = new mongoose.Schema(
     ],
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    profileImage: { type: String },
+    profileImage: {
+      type: String,
+      default: "2024-05-08T17-48-27.490Zfaith.png",
+    },
   },
   {
     timestamps: true,

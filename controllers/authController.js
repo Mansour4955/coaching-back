@@ -3,9 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 module.exports.registerUserCtrl = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "no image provided" });
-  }
   const { error } = registerUser(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -15,7 +12,6 @@ module.exports.registerUserCtrl = async (req, res) => {
     if (user) {
       return res.status(400).json({ message: "user already exists" });
     }
-    const imageProfile = req.file.filename;
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     user = await User.create({
       username: req.body.username,
@@ -32,7 +28,6 @@ module.exports.registerUserCtrl = async (req, res) => {
       trainings: req.body.trainings,
       softSkills: req.body.softSkills,
       experiences: req.body.experiences,
-      profileImage: imageProfile,
     });
     await user.save();
     res.status(201).json({ message: "registered successfully" });
