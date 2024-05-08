@@ -118,11 +118,7 @@ const userSchema = new mongoose.Schema(
     ],
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    profileImage: {
-      type: String,
-      default:
-        "https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg",
-    },
+    profileImage: { type: String },
   },
   {
     timestamps: true,
@@ -181,6 +177,7 @@ const registerUser = (obj) => {
     trainings: Joi.array().items(Joi.string()),
     softSkills: Joi.array().items(Joi.string()),
     experiences: Joi.array().items(Joi.string()),
+    profileImage: Joi.string(),
   });
   return schema.validate(obj);
 };
@@ -292,9 +289,7 @@ const updateUser = (obj) => {
     ),
     chats: Joi.array().items(Joi.string()),
     posts: Joi.array().items(Joi.string()),
-    profileImage: Joi.string().default(
-      "https://as2.ftcdn.net/v2/jpg/05/49/98/39/1000_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"
-    ),
+    profileImage: Joi.string(),
   });
   return schema.validate(obj);
 };
