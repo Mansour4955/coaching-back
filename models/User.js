@@ -112,7 +112,7 @@ const userSchema = new mongoose.Schema(
     reviews: [
       {
         name: { type: String },
-        stars: { type: String, min: 3 },
+        stars: { type: String },
         description: { type: String },
       },
     ],
@@ -286,7 +286,7 @@ const updateUser = (obj) => {
     reviews: Joi.array().items(
       Joi.object({
         name: Joi.string().required(),
-        stars: Joi.string().min(3).required(),
+        stars: Joi.string().required(),
         description: Joi.string().required(),
       })
     ),

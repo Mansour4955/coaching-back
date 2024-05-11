@@ -11,7 +11,12 @@ module.exports.createChatCtrl = asyncHandler(async (req, res) => {
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
-  const chat = await Chat.create({
+  let chat;
+  chat = await Chat.findOne({ users: req.body.users });
+  if (chat) {
+    return res.status(400).json({ message: "chat already exists" });
+  }
+  chat = await Chat.create({
     users: req.body.users,
   });
   res.status(201).json(chat);
@@ -24,7 +29,9 @@ module.exports.createChatCtrl = asyncHandler(async (req, res) => {
 ------------------------------------------*/
 module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const chats = await Chat.find({ users: userId }).populate("messages").populate("users")
+  const chats = await Chat.find({ users: userId })
+    .populate("messages")
+    .populate("users");
   res.status(200).json(chats);
 });
 /**----------------------------------------
@@ -35,7 +42,9 @@ module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
 ------------------------------------------*/
 module.exports.getSingleChatCtrl = asyncHandler(async (req, res) => {
   const chatId = req.params.id;
-  const chat = await Chat.findById(chatId).populate("messages").populate("users")
+  const chat = await Chat.findById(chatId)
+    .populate("messages")
+    .populate("users");
   res.status(200).json(chat);
 });
 /**----------------------------------------

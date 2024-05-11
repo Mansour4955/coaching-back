@@ -16,7 +16,7 @@ const { Chat } = require("../models/Chat");
 ------------------------------------------*/
 module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
   let query = {};
-  const { city, method, course, maxPrice, name,role } = req.query;
+  const { city, method, course, maxPrice, name, role } = req.query;
   if (city) {
     query.city = city;
   }
@@ -74,37 +74,49 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
   if (req.body.password) {
     req.body.password = await bcrypt.hash(req.body.password, 10);
   }
-  const updatedUser = await User.findByIdAndUpdate(
-    req.params.id,
-    {
-      $set: {
-        username: req.body.username,
-        password: req.body.password,
-        profession: req.body.profession,
-        course: req.body.course,
-        city: req.body.city,
-        method: req.body.method,
-        price: req.body.price,
-        education: req.body.education,
-        about: req.body.about,
-        trainings: req.body.trainings,
-        softSkills: req.body.softSkills,
-        experiences: req.body.experiences,
-        follow: req.body.follow,
-        following: req.body.following,
-        appointmentOrders: req.body.appointmentOrders,
-        appointmentOnWait: req.body.appointmentOnWait,
-        appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
-        appointmentAccepted: req.body.appointmentAccepted,
-        coachNotifications: req.body.coachNotifications,
-        clientNotifications: req.body.clientNotifications,
-        reviews: req.body.reviews,
-        chats: req.body.chats,
-        posts: req.body.posts,
+  let updatedUser;
+  if (!req.body.reviews) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          username: req.body.username,
+          password: req.body.password,
+          profession: req.body.profession,
+          course: req.body.course,
+          city: req.body.city,
+          method: req.body.method,
+          price: req.body.price,
+          education: req.body.education,
+          about: req.body.about,
+          trainings: req.body.trainings,
+          softSkills: req.body.softSkills,
+          experiences: req.body.experiences,
+          follow: req.body.follow,
+          following: req.body.following,
+          appointmentOrders: req.body.appointmentOrders,
+          appointmentOnWait: req.body.appointmentOnWait,
+          appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
+          appointmentAccepted: req.body.appointmentAccepted,
+          coachNotifications: req.body.coachNotifications,
+          clientNotifications: req.body.clientNotifications,
+          // reviews: req.body.reviews,
+          chats: req.body.chats,
+          posts: req.body.posts,
+        },
       },
-    },
-    { new: true }
-  ).select("-password");
+      { new: true }
+    ).select("-password");
+  } else {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { reviews: req.body.reviews },
+      },
+      { new: true }
+    ).select("-password");
+  }
+  // await updateUser.save();
   res.status(200).json(updatedUser);
 });
 /**----------------------------------------

@@ -9,8 +9,8 @@ router.route("/").get(getAllUsersCtrl);
 router
   .route("/:id")
   .get(validateObjectId,getUserProfileCtrl)
-  .put(validateObjectId, verifyTokenAndOnlyUser,updateUserProfileCtrl)
-  .delete(validateObjectId, verifyTokenAndOnlyUser,deleteUserProfileCtrl)
+  .put(validateObjectId,updateUserProfileCtrl)
+  .delete(validateObjectId, verifyToken,deleteUserProfileCtrl)
   .post(verifyToken, photoUpload.single("image"), profilePhotoUploadCtrl);
 
 // router
