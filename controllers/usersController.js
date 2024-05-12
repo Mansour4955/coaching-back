@@ -150,6 +150,40 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
       },
       { new: true }
     ).select("-password");
+  } else if (req.body.follow) {
+    const follower = await User.findOne({
+      _id: req.params.id,
+      follow: { $in: req.body.follow },
+    });
+    if (follower) {
+      return res
+        .status(400)
+        .json({ message: "they are already following you!" });
+    }
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { follow: req.body.follow },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.following) {
+    const theFollowing = await User.findOne({
+      _id: req.params.id,
+      following: { $in: req.body.following },
+    });
+    if (theFollowing) {
+      return res
+        .status(400)
+        .json({ message: "you are already followed them!" });
+    }
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { following: req.body.following },
+      },
+      { new: true }
+    ).select("-password");
   } else {
     updatedUser = await User.findByIdAndUpdate(
       req.params.id,
@@ -167,10 +201,8 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
           trainings: req.body.trainings,
           softSkills: req.body.softSkills,
           experiences: req.body.experiences,
-          follow: req.body.follow,
-          following: req.body.following,
-          appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
-          appointmentAccepted: req.body.appointmentAccepted,
+          // appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
+          // appointmentAccepted: req.body.appointmentAccepted,
           chats: req.body.chats,
           posts: req.body.posts,
         },
