@@ -67,6 +67,7 @@ module.exports.getUserProfileCtrl = asyncHandler(async (req, res) => {
  * @access private (only user himself)
 ------------------------------------------*/
 module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
+  const { user, date, message, field } = req.query;
   const { error } = updateUser(req.body);
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
@@ -75,7 +76,81 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
     req.body.password = await bcrypt.hash(req.body.password, 10);
   }
   let updatedUser;
-  if (!req.body.reviews) {
+  if (req.body.reviews) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { reviews: req.body.reviews },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.appointmentOrders) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { appointmentOrders: req.body.appointmentOrders },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.appointmentOnWait) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { appointmentOnWait: req.body.appointmentOnWait },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (user && date && field === "appointmentOrders") {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { appointmentOrders: { user, date } },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (user && date && field === "appointmentOnWait") {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { appointmentOnWait: { user, date } },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.appointmentAccepted) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { appointmentAccepted: req.body.appointmentAccepted },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.appointmentAcceptedFromCoach) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: {
+          appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
+        },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.coachNotifications) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { coachNotifications: req.body.coachNotifications },
+      },
+      { new: true }
+    ).select("-password");
+  } else if (req.body.clientNotifications) {
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { clientNotifications: req.body.clientNotifications },
+      },
+      { new: true }
+    ).select("-password");
+  } else {
     updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -94,24 +169,11 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
           experiences: req.body.experiences,
           follow: req.body.follow,
           following: req.body.following,
-          appointmentOrders: req.body.appointmentOrders,
-          appointmentOnWait: req.body.appointmentOnWait,
           appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
           appointmentAccepted: req.body.appointmentAccepted,
-          coachNotifications: req.body.coachNotifications,
-          clientNotifications: req.body.clientNotifications,
-          // reviews: req.body.reviews,
           chats: req.body.chats,
           posts: req.body.posts,
         },
-      },
-      { new: true }
-    ).select("-password");
-  } else {
-    updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        $push: { reviews: req.body.reviews },
       },
       { new: true }
     ).select("-password");
