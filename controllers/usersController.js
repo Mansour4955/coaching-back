@@ -184,7 +184,24 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
       },
       { new: true }
     ).select("-password");
-  } else {
+  } else if(user && date && field === "appointmentAccepted"){
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { appointmentAccepted: { user, date } },
+      },
+      { new: true }
+    ).select("-password");
+  }else if(user && date && field === "appointmentAcceptedFromCoach"){
+    updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $pull: { appointmentAcceptedFromCoach: { user, date } },
+      },
+      { new: true }
+    ).select("-password");
+  }
+  else {
     updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -201,8 +218,6 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
           trainings: req.body.trainings,
           softSkills: req.body.softSkills,
           experiences: req.body.experiences,
-          // appointmentAcceptedFromCoach: req.body.appointmentAcceptedFromCoach,
-          // appointmentAccepted: req.body.appointmentAccepted,
           chats: req.body.chats,
           posts: req.body.posts,
         },

@@ -97,6 +97,7 @@ const userSchema = new mongoose.Schema(
     ],
     coachNotifications: [
       {
+        message: { type: String },
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
         action: { type: String, enum: ["cancel", "follow"] },
@@ -104,6 +105,7 @@ const userSchema = new mongoose.Schema(
     ],
     clientNotifications: [
       {
+        message: { type: String },
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         date: { type: String },
         action: { type: String, enum: ["cancel", "accept"] },
@@ -271,6 +273,7 @@ const updateUser = (obj) => {
     ),
     coachNotifications: Joi.array().items(
       Joi.object({
+        message: Joi.string(),
         user: Joi.string().required(),
         date: Joi.string().required(),
         action: Joi.string().valid("cancel", "follow").required(),
@@ -278,6 +281,7 @@ const updateUser = (obj) => {
     ),
     clientNotifications: Joi.array().items(
       Joi.object({
+        message: Joi.string(),
         user: Joi.string().required(),
         date: Joi.string().required(),
         action: Joi.string().valid("cancel", "accept").required(),
