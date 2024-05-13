@@ -122,7 +122,7 @@ const userSchema = new mongoose.Schema(
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     profileImage: {
       type: String,
-      default: "2024-05-08T17-48-27.490Zfaith.png",
+      default: "2024-05-08T18-59-41.603Zdefault.jpg",
     },
   },
   {

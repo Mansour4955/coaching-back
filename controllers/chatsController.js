@@ -33,6 +33,23 @@ module.exports.getAllChatsCtrl = asyncHandler(async (req, res) => {
     .populate("messages")
     .populate("users");
   res.status(200).json(chats);
+    // const userId = req.params.id;
+  // const { filterByName } = req.query;
+  // let query = {};
+  // if (filterByName) {
+  //   query["users.username"] = { $regex: new RegExp(filterByName, "i") };
+  // }
+  // let chats;
+  // if (filterByName) {
+  //   chats = await Chat.find({ users: userId, ...query })
+  //     .populate("messages")
+  //     .populate("users");
+  // } else {
+  //   chats = await Chat.find({ users: userId })
+  //     .populate("messages")
+  //     .populate("users");
+  // }
+  // res.status(200).json(chats);
 });
 /**----------------------------------------
  * @desc Get single chat
