@@ -200,8 +200,7 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
       },
       { new: true }
     ).select("-password");
-  }
-  else {
+  } else {
     updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -218,6 +217,8 @@ module.exports.updateUserProfileCtrl = asyncHandler(async (req, res) => {
           trainings: req.body.trainings,
           softSkills: req.body.softSkills,
           experiences: req.body.experiences,
+
+          /////////////////////
           chats: req.body.chats,
           posts: req.body.posts,
         },
