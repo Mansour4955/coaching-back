@@ -19,7 +19,7 @@ app.use(cors({ origin: ["https://coaching-sage.vercel.app"] }));
 
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Backend!");
+  res.send("Welcome to the Backend !!!!");
 });
 
 // Routes
