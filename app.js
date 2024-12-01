@@ -17,6 +17,11 @@ app.use(express.json());
 // app.use(cors());
 app.use(cors({ origin: ["https://coaching-sage.vercel.app"] }));
 
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the Backend!");
+});
+
 // Routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
